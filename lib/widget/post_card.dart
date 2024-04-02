@@ -1,5 +1,6 @@
 import 'dart:js_interop';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:instagram_clone/model/user.dart';
@@ -21,6 +22,20 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
+  var commentLen = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getComment();
+  }
+  void getComment()async{
+ QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc(widget.snap['postId']).collection('comments').get();
+      commentLen=snapshot.docs.length;
+      setState(() {
+        
+      });
+  }
   @override
   Widget build(BuildContext context) {
     final UserModel user = Provider.of<UserProvider>(context).getUser;
@@ -63,7 +78,10 @@ class _PostCardState extends State<PostCard> {
                                   padding: EdgeInsets.symmetric(vertical: 16),
                                   children: ['delete']
                                       .map((e) => InkWell(
-                                            onTap: () {},
+                                            onTap: () async{
+                                              FirestoreMethod().deletePost(widget.snap['postId']);
+                                              Navigator.pop(context);
+                                            },
                                             child: Container(
                                               padding: EdgeInsets.symmetric(
                                                   vertical: 12, horizontal: 16),
@@ -146,7 +164,7 @@ class _PostCardState extends State<PostCard> {
                 ),
                 InkWell(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_)=>CommentScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (_)=>CommentScreen(snap: widget.snap,)));
                   },
                   child: Container(
                       height: 23,
@@ -195,6 +213,9 @@ class _PostCardState extends State<PostCard> {
                         TextSpan(
                             text: widget.snap["userName"],
                             style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(
+                          text: " ",
+                        ),
                         TextSpan(
                           text: widget.snap['description'],
                         )
@@ -205,7 +226,7 @@ class _PostCardState extends State<PostCard> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 4),
                     child: Text(
-                      "View all 200 comments",
+                      "View all ${commentLen} comments",
                       style: TextStyle(color: secondaryColor, fontSize: 16),
                     ),
                   ),

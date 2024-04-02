@@ -28,7 +28,7 @@ class AuthMethod{
      try{
       if(email.isNotEmpty||password.isNotEmpty||username.isNotEmpty||bio.isNotEmpty||file!=null){
        final UserCredential credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      String photoURL = await StorageMethod().upLoadImage('ProfilePics', file, false);
+      String photoURL = await StorageMethod().uploadImageToStorage('ProfilePics', file, false);
         model.UserModel user = model.UserModel(
     email: email, 
     uid: credential.user!.uid, 

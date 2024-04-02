@@ -33,10 +33,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
    required String profImage
     }
   )async{
-    try{
-      setState(() {
+    setState(() {
         isLoading=true;
       });
+    try{
+      
        final res = await FirestoreMethod().upLoad(
         _descriptionController.text, 
         _file!, 
@@ -51,8 +52,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
           isLoading=false;
   
         });
-        clearImage();
+       if(context.mounted){
         showSnackBar(context, "Posted");
+       }
+        
+        clearImage();
       }else{
         showSnackBar(context, res);
       }
@@ -60,7 +64,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
            showSnackBar(context, e.toString());
     }
   }
-  selectedImage(BuildContext context){
+  selectedImage(BuildContext context)async{
     return showDialog(context: context, builder: (_){
       return SimpleDialog(
         title: Text("Create a Post"),
@@ -107,8 +111,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    final UserModel user = Provider.of<UserProvider>(context).getUser;
-    print(user.username);
+    final UserProvider user = Provider.of<UserProvider>(context);
+    
     final size = MediaQuery.of(context).size;
    return _file==null?
      Center(child: 
@@ -123,7 +127,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
           onPressed: clearImage, 
           icon: Icon(Icons.arrow_back,color: Colors.black,)),
         actions: [
-          TextButton(onPressed:()=> postImage(uid: user.uid, userName: user.username, profImage: user.photoUrl), child: 
+          TextButton(onPressed:()=> postImage(uid: user.getUser.uid, userName: user.getUser.username, profImage: user.getUser.photoUrl), child: 
           Text("post",style: TextStyle(
             color: Colors.blueAccent,
             fontSize: 16,
@@ -140,7 +144,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(user.photoUrl),
+              backgroundImage: NetworkImage(user.getUser.photoUrl),
             ),
             SizedBox(
               width: size.width*0.3,
@@ -153,7 +157,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   hintStyle: TextStyle(
                     color: Colors.black
                   ),
-                  border: InputBorder.none
+                  border: InputBorder.none,
+                  
                 ),
                 maxLines: 8,
               ),
@@ -161,13 +166,16 @@ class _AddPostScreenState extends State<AddPostScreen> {
             SizedBox(
               height: 45,
               width: 45,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: MemoryImage(_file!),
-                    fit: BoxFit.fill,
-                    alignment: FractionalOffset.topCenter
-                  )
+              child: AspectRatio(
+                aspectRatio: 487/451,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: MemoryImage(_file!),
+                      fit: BoxFit.fill,
+                      alignment: FractionalOffset.topCenter
+                    )
+                  ),
                 ),
               ),
             )

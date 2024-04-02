@@ -21,8 +21,8 @@ class FirestoreMethod{
     
     var res = "Some error occur";
     try{
-        String photoUrl = await StorageMethod().upLoadImage("posts", file, true);
-        final postId = Uuid().v1();
+        String photoUrl = await StorageMethod().uploadImageToStorage("posts", file, true);
+        String postId = Uuid().v1();
       PostModel post =  PostModel(
           description: description, 
           uid: uid, 
@@ -53,5 +53,29 @@ class FirestoreMethod{
      }catch(e){
       print(e.toString());
      }
+  }
+  Future<void> PostComment(String postId, String text, String uid, String name, String profilePic) async{
+    try{
+      String commentId = Uuid().v1();
+       if(text.isNotEmpty){
+        _firestore.collection('posts').doc(postId).collection("comments").doc(commentId).set({
+             'profilePic':profilePic,
+             'name':name,
+             'uid':uid,
+             'text':text,
+             'commentId': commentId,
+             'datePublished': DateTime.now()
+        });
+       }
+    }catch (e){
+      print(e);
+    }
+  }
+  Future<void> deletePost(String postId)async{
+    try{
+      await _firestore.collection('posts').doc(postId).delete()
+;    }catch(e){
+      print(e);
+    }
   }
 }

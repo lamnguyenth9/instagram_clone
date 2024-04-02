@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class CommentsCard extends StatefulWidget {
-  const CommentsCard({super.key});
+  final snap;
+  const CommentsCard({super.key, required this.snap});
 
   @override
   State<CommentsCard> createState() => _CommentsCardState();
@@ -18,35 +21,49 @@ class _CommentsCardState extends State<CommentsCard> {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundImage: AssetImage("assets/lam.jpg"),
+            backgroundImage: AssetImage(widget.snap['profilePic']),
           ),
-          Padding(padding: EdgeInsets.only(left: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "User Name  ",
-                      style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black)
-                    ),
-                    TextSpan(
-                      text: "some description",
-                      style: TextStyle(color: Colors.black)
-                    )
-                  ]
+          Expanded(
+            child: Padding(padding: EdgeInsets.only(left: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: widget.snap['name'],
+                        style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black)
+                      ),
+                      TextSpan(
+                        text: "  ",
+                        style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black)
+                      ),
+                      TextSpan(
+                        text: widget.snap['text'],
+                        style: TextStyle(color: Colors.black)
+                      )
+                    ]
+                  )
+                  ),
+                  Padding(padding: EdgeInsets.only(top: 4),
+                  child: Text( DateFormat.yMMMd()
+                        .format(widget.snap['datePublished'].toDate()),style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black
+                  ),),),
+                  
+              ],
+            ),),
+          ),
+          Container(
+                  height: 30,
+                  width: 30,
+                  padding: EdgeInsets.all(4),
+                  child: Image.asset("assets/heart.png",)
                 )
-                ),
-                Padding(padding: EdgeInsets.only(top: 4),
-                child: Text("29/3/2024",style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black
-                ),),)
-            ],
-          ),)
         ],
       ),
     );
